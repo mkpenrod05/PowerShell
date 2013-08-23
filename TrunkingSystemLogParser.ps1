@@ -69,46 +69,47 @@ function GetIDRange($TrunkID) {
     #Set the $Result variable to a default value
     $Result = "UNKNOWN"
 
-    if (($TrunkID -ge "700001") -and ($TrunkID -le "700499")) {$Result = "LAO"}
-    elseif (($TrunkID -ge "701000") -and ($TrunkID -le "701499")) {$Result = "388 FW"}
-    elseif (($TrunkID -ge "701500") -and ($TrunkID -le "701540")) {$Result = "IG"}
-    elseif (($TrunkID -ge "701541") -and ($TrunkID -le "701589")) {$Result = "START"}
-    elseif (($TrunkID -ge "702000") -and ($TrunkID -le "702099")) {$Result = "DP-READINESS"}
-    elseif (($TrunkID -ge "702100") -and ($TrunkID -le "702249")) {$Result = "388 FW"}
-    elseif (($TrunkID -ge "702250") -and ($TrunkID -le "702499")) {$Result = "DP-READINESS"}
-    elseif (($TrunkID -ge "702500") -and ($TrunkID -le "702999")) {$Result = "CE"}
-    elseif (($TrunkID -ge "703000") -and ($TrunkID -le "703499")) {$Result = "EOD"}
-    elseif (($TrunkID -ge "703500") -and ($TrunkID -le "703999")) {$Result = "75 SFS"}
-    elseif (($TrunkID -ge "704000") -and ($TrunkID -le "704499")) {$Result = "BASE OPS-SAFETY-TA"}
-    elseif (($TrunkID -ge "705000") -and ($TrunkID -le "705799")) {$Result = "388 RANS"}
-    elseif (($TrunkID -ge "705800") -and ($TrunkID -le "705999")) {$Result = "388 FW"}
-    elseif (($TrunkID -ge "706000") -and ($TrunkID -le "706299")) {$Result = "75 LRS"}
-    elseif (($TrunkID -ge "706500") -and ($TrunkID -le "706999")) {$Result = "419TH"}
-    elseif (($TrunkID -ge "707000") -and ($TrunkID -le "707499")) {$Result = "MISSILE"}
-    elseif (($TrunkID -ge "707500") -and ($TrunkID -le "707799")) {$Result = "HOSPITAL"}
-    elseif (($TrunkID -ge "708500") -and ($TrunkID -le "708549")) {$Result = "ENVIRONMENTAL"}
-    elseif (($TrunkID -ge "709000") -and ($TrunkID -le "709360")) {$Result = "FIRE"}
-    elseif (($TrunkID -ge "709500") -and ($TrunkID -le "709799")) {$Result = "OSI"}
-    elseif (($TrunkID -ge "710500") -and ($TrunkID -le "710999")) {$Result = "BASE TAXI"}
-    elseif (($TrunkID -ge "711000") -and ($TrunkID -le "711499")) {$Result = "75 COMM"}
-    elseif (($TrunkID -ge "711500") -and ($TrunkID -le "711999")) {$Result = "649 MUNS"}
-    elseif (($TrunkID -ge "712100") -and ($TrunkID -le "712149")) {$Result = "649 CLSS"}
-    elseif (($TrunkID -ge "713000") -and ($TrunkID -le "713499")) {$Result = "75 RANS"}
-    elseif (($TrunkID -ge "714000") -and ($TrunkID -le "714049")) {$Result = "299TH"}
-    elseif (($TrunkID -ge "715000") -and ($TrunkID -le "715099")) {$Result = "86 FWS DET 1"}
-    elseif (($TrunkID -ge "718888") -and ($TrunkID -le "719562")) {$Result = "SLC GUARD DIGITAL"}
-    elseif (($TrunkID -ge "720200") -and ($TrunkID -le "720599")) {$Result = "BASE OPS CONSOLE ID"}
-    elseif (($TrunkID -ge "720600") -and ($TrunkID -le "720799")) {$Result = "COMMAND POST CONSOLE ID"}
-    elseif (($TrunkID -ge "721000") -and ($TrunkID -le "721199")) {$Result = "DP-READINESS CONSOLE ID"}
-    elseif (($TrunkID -ge "721200") -and ($TrunkID -le "721599")) {$Result = "FIRE CONSOLE ID"}
-    elseif (($TrunkID -ge "721600") -and ($TrunkID -le "721999")) {$Result = "LAO CONSOLE ID"}
-    elseif (($TrunkID -ge "722000") -and ($TrunkID -le "722399")) {$Result = "75 SFS CONSOLE ID"}
-    elseif (($TrunkID -ge "722400") -and ($TrunkID -le "722499")) {$Result = "UTTR CONSOLE ID"}
-    elseif (($TrunkID -ge "722500") -and ($TrunkID -le "722650")) {$Result = "388 FW CONSOLE ID"}
-    elseif (($TrunkID -ge "730000") -and ($TrunkID -le "730599")) {$Result = "ANALOG CONSOLE ID"}
-    elseif (($TrunkID -ge "731000") -and ($TrunkID -le "732149")) {$Result = "SLC GUARD"}
-    elseif (($TrunkID -ge "737001") -and ($TrunkID -le "739999")) {$Result = "DHS"}
-    
+    if (($TrunkID -ne "") -and ($TrunkID -ne $null)) {
+        if (($TrunkID -ge "700001") -and ($TrunkID -le "700499")) {$Result = "LAO"}
+        elseif (($TrunkID -ge "701000") -and ($TrunkID -le "701499")) {$Result = "388 FW"}
+        elseif (($TrunkID -ge "701500") -and ($TrunkID -le "701540")) {$Result = "IG"}
+        elseif (($TrunkID -ge "701541") -and ($TrunkID -le "701589")) {$Result = "START"}
+        elseif (($TrunkID -ge "702000") -and ($TrunkID -le "702099")) {$Result = "DP-READINESS"}
+        elseif (($TrunkID -ge "702100") -and ($TrunkID -le "702249")) {$Result = "388 FW"}
+        elseif (($TrunkID -ge "702250") -and ($TrunkID -le "702499")) {$Result = "DP-READINESS"}
+        elseif (($TrunkID -ge "702500") -and ($TrunkID -le "702999")) {$Result = "CE"}
+        elseif (($TrunkID -ge "703000") -and ($TrunkID -le "703499")) {$Result = "EOD"}
+        elseif (($TrunkID -ge "703500") -and ($TrunkID -le "703999")) {$Result = "75 SFS"}
+        elseif (($TrunkID -ge "704000") -and ($TrunkID -le "704499")) {$Result = "BASE OPS-SAFETY-TA"}
+        elseif (($TrunkID -ge "705000") -and ($TrunkID -le "705799")) {$Result = "388 RANS"}
+        elseif (($TrunkID -ge "705800") -and ($TrunkID -le "705999")) {$Result = "388 FW"}
+        elseif (($TrunkID -ge "706000") -and ($TrunkID -le "706299")) {$Result = "75 LRS"}
+        elseif (($TrunkID -ge "706500") -and ($TrunkID -le "706999")) {$Result = "419TH"}
+        elseif (($TrunkID -ge "707000") -and ($TrunkID -le "707499")) {$Result = "MISSILE"}
+        elseif (($TrunkID -ge "707500") -and ($TrunkID -le "707799")) {$Result = "HOSPITAL"}
+        elseif (($TrunkID -ge "708500") -and ($TrunkID -le "708549")) {$Result = "ENVIRONMENTAL"}
+        elseif (($TrunkID -ge "709000") -and ($TrunkID -le "709360")) {$Result = "FIRE"}
+        elseif (($TrunkID -ge "709500") -and ($TrunkID -le "709799")) {$Result = "OSI"}
+        elseif (($TrunkID -ge "710500") -and ($TrunkID -le "710999")) {$Result = "BASE TAXI"}
+        elseif (($TrunkID -ge "711000") -and ($TrunkID -le "711499")) {$Result = "75 COMM"}
+        elseif (($TrunkID -ge "711500") -and ($TrunkID -le "711999")) {$Result = "649 MUNS"}
+        elseif (($TrunkID -ge "712100") -and ($TrunkID -le "712149")) {$Result = "649 CLSS"}
+        elseif (($TrunkID -ge "713000") -and ($TrunkID -le "713499")) {$Result = "75 RANS"}
+        elseif (($TrunkID -ge "714000") -and ($TrunkID -le "714049")) {$Result = "299TH"}
+        elseif (($TrunkID -ge "715000") -and ($TrunkID -le "715099")) {$Result = "86 FWS DET 1"}
+        elseif (($TrunkID -ge "718888") -and ($TrunkID -le "719562")) {$Result = "SLC GUARD DIGITAL"}
+        elseif (($TrunkID -ge "720200") -and ($TrunkID -le "720599")) {$Result = "BASE OPS CONSOLE ID"}
+        elseif (($TrunkID -ge "720600") -and ($TrunkID -le "720799")) {$Result = "COMMAND POST CONSOLE ID"}
+        elseif (($TrunkID -ge "721000") -and ($TrunkID -le "721199")) {$Result = "DP-READINESS CONSOLE ID"}
+        elseif (($TrunkID -ge "721200") -and ($TrunkID -le "721599")) {$Result = "FIRE CONSOLE ID"}
+        elseif (($TrunkID -ge "721600") -and ($TrunkID -le "721999")) {$Result = "LAO CONSOLE ID"}
+        elseif (($TrunkID -ge "722000") -and ($TrunkID -le "722399")) {$Result = "75 SFS CONSOLE ID"}
+        elseif (($TrunkID -ge "722400") -and ($TrunkID -le "722499")) {$Result = "UTTR CONSOLE ID"}
+        elseif (($TrunkID -ge "722500") -and ($TrunkID -le "722650")) {$Result = "388 FW CONSOLE ID"}
+        elseif (($TrunkID -ge "730000") -and ($TrunkID -le "730599")) {$Result = "ANALOG CONSOLE ID"}
+        elseif (($TrunkID -ge "731000") -and ($TrunkID -le "732149")) {$Result = "SLC GUARD"}
+        elseif (($TrunkID -ge "737001") -and ($TrunkID -le "739999")) {$Result = "DHS"}
+    }
 
     $Range = switch -regex ($TrunkID) {
 
@@ -360,15 +361,9 @@ function GetIDRange($TrunkID) {
 
     }
 
- 
-
-    return $testing
-
-    #return $Range
+    return $Result
 
 }
-
- 
 
 function InsertIntoDB($table, $SerialNumber) {
 
@@ -438,8 +433,6 @@ function InsertIntoDB($table, $SerialNumber) {
 
 }
 
- 
-
 function InsertIntoAssetsDB($TrunkID, $TrunkIDRange) {
 
    
@@ -498,8 +491,6 @@ function InsertIntoAssetsDB($TrunkID, $TrunkIDRange) {
 
 }
 
- 
-
 function GetSerialNumber($TrunkID) {
 
    
@@ -555,8 +546,6 @@ function GetSerialNumber($TrunkID) {
  
 
 }
-
- 
 
 function GetSerialNumberFromArchive($TrunkID) {
 
@@ -632,8 +621,6 @@ function GetSerialNumberFromArchive($TrunkID) {
 
 }
 
- 
-
 function DeleteOldRecords($Table) {
 
    
@@ -680,41 +667,26 @@ function DeleteOldRecords($Table) {
 
 }
 
- 
-
 $ds = New-Object System.Data.Dataset
 
 $ds.Tables.Add("Items")
 
 [void]$ds.Tables["Items"].Columns.Add("Date",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("Action",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("Status",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("Radio",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("RadioUser",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("SerialNumber",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("TargetGroupID",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("TargetGroupName",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("OLCallNumber",[string])
-
 [void]$ds.Tables["Items"].Columns.Add("Reason",[string])
 
- 
+#$SetPath = "\\fshill\data\CommInfo\75 CS\Hill CFP\PWCS\Trunking System Log Files"
+$SetPath = "C:\Temp"
 
-$SetPath = "\\fshill\data\CommInfo\75 CS\Hill CFP\PWCS\Trunking System Log Files"
-
- 
-
-$OriginalFiles = Get-ChildItem "\\fshill\data\CommInfo\75 CS\Hill CFP\PWCS\Trunking System Log Files\Log Files"
-
- 
+#$OriginalFiles = Get-ChildItem "\\fshill\data\CommInfo\75 CS\Hill CFP\PWCS\Trunking System Log Files\Log Files"
+$OriginalFiles = Get-ChildItem "$SetPath\Log Files"
 
 #The following loop will rename all the files in the specified directory with a .txt extension
 
@@ -924,13 +896,23 @@ $FileList | % {
 
     $ds.Tables["Items"] | % {
 
-         
+        if (($_.Radio).length -gt 0) {
+            $Range = GetIDRange $_.Radio
+        } else {
+            $Range = "UNKNOWN"
+        }
 
-        $Range = GetIDRange $_.Radio
+        #This section is just for testing.  Uncomment to see the 
+        #the trunk ID range for each trunk ID.
 
-        "TRUNK ID: " + $_.Radio + " --- ID RANGE: " + $Range
+        #try {
+        #    "TRUNK ID: " + $_.Radio + " --- ID RANGE: " + $Range
+        #} catch [Exception] {
+        #    "TRUNK ID: UNDEFINED --- ID RANGE: " + $Range
+        #}
 
- 
+      ##############Temp if statement
+      if ("x" -eq "y") {  
 
         #Get the serial number for the current trunkd ID
 
@@ -982,7 +964,7 @@ $FileList | % {
 
         try {
 
-            ##################################$_.Radio + " - " + $SerialNumber
+            ###$_.Radio + " - " + $SerialNumber
 
         } catch [Exception] {
 
@@ -1028,7 +1010,7 @@ $FileList | % {
 
         }
 
-       
+      }####################temp if statement 
 
     }   
 

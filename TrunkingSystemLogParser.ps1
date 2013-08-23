@@ -1,5 +1,7 @@
 ﻿Clear
 
+$ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True"
+
 Function GetIndividual($Value) {
 
     $Value = $Value -replace "Individual = ", ""
@@ -367,23 +369,13 @@ function GetIDRange($TrunkID) {
 
 function InsertIntoDB($table, $SerialNumber) {
 
-   
-
     #$SerialNumber
 
-   
-
     $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-
-    $SqlConnection.ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True" 
-
+    $SqlConnection.ConnectionString = $ConnectionString
     $SqlConnection.Open() 
 
-    
-
     $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-
-    
 
     $SqlCmd.CommandText = "INSERT INTO $table (TransmitDate, Action, Status, Radio, RadioUser, SerialNumber, TargetGroupID, TargetGroupName, OLCallNumber, Reason)
 
@@ -435,23 +427,13 @@ function InsertIntoDB($table, $SerialNumber) {
 
 function InsertIntoAssetsDB($TrunkID, $TrunkIDRange) {
 
-   
-
     #$SerialNumber
 
-   
-
     $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-
-    $SqlConnection.ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True" 
-
+    $SqlConnection.ConnectionString = $ConnectionString
     $SqlConnection.Open() 
 
-    
-
     $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-
-    
 
     $SqlCmd.CommandText = "INSERT INTO assets (trunkID, trunkIDRange, serialNum)
 
@@ -480,41 +462,25 @@ function InsertIntoAssetsDB($TrunkID, $TrunkIDRange) {
     $HideCmd = $SqlCmd.executenonquery()
 
     #$SqlCmd.executenonquery()
-
     
-
     ###if ($HideCmd -eq 0) { $_.Radio }
-
-    
 
     $SqlConnection.Close()
 
 }
 
-function GetSerialNumber($TrunkID) {
-
-   
+function GetSerialNumber_OLD($TrunkID) {
 
     #$TrunkID
 
-   
-
     $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-
-    $SqlConnection.ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True"   
-
+    $SqlConnection.ConnectionString = $ConnectionString
     $SqlConnection.Open() 
 
-    
-
     $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-
-    
 
     $SqlCmd.CommandText = "SELECT TOP(1) serialNum FROM dbo.assets WHERE trunkID = '" + $TrunkID + "'"
 
-    
-
     $SqlCmd.Connection = $SqlConnection
 
     $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
@@ -522,146 +488,79 @@ function GetSerialNumber($TrunkID) {
     $SqlAdapter.SelectCommand = $SqlCmd
 
     $DataSetDB = New-Object System.Data.DataSet
-
-    $throw = $SqlAdapter.Fill($DataSetDB)
-
-   
-
-    #$Reader = $SqlCmd.ExecuteReader()
-
-    $SqlConnection.Close()
-
-    
-
-    $DataSetDB.Tables[0] | % {
-
-        $test = $_.serialNum
-
-    }
-
- 
-
-    Return $test
-
- 
-
-}
-
-function GetSerialNumberFromArchive($TrunkID) {
-
-   
-
-    #$TrunkID
-
-   
-
-    $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-
-    $SqlConnection.ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True"   
-
-    $SqlConnection.Open() 
-
-    
-
-    $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-
-    
-
-    $SqlCmd.CommandText = "SELECT TOP(1) serialNum FROM dbo.[archive-assets] WHERE trunkID = '" + $TrunkID + "' ORDER BY trunkID, modified_date DESC"
-
-    
-
-    $SqlCmd.Connection = $SqlConnection
-
-    $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
-
-    $SqlAdapter.SelectCommand = $SqlCmd
-
-    $DataSetDB = New-Object System.Data.DataSet
-
-    ###$throw = $SqlAdapter.Fill($DataSetDB)
-
-   
 
     $Reader = $SqlCmd.ExecuteReader()
 
-   
-
     if ($Reader.hasRows) {
-
         While ($Reader.Read()) {
-
             $SerialNumber = $Reader['serialNum']
-
         }
-
     } else {
-
         $SerialNumber = "0"
-
     }
-
-   
 
     $SqlConnection.Close()
 
+    Return $SerialNumber
+}
+
+function GetSerialNumber($TrunkID, $TableName) {
+
+    #$TrunkID
+
+    $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
+    $SqlConnection.ConnectionString = $ConnectionString
+    $SqlConnection.Open() 
+
+    $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
+
+    $SqlCmd.CommandText = "SELECT TOP(1) serialNum FROM dbo.[$TableName] WHERE trunkID = '" + $TrunkID + "' ORDER BY trunkID, modified_date DESC"
+
+    $SqlCmd.Connection = $SqlConnection
+
+    $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
+
+    $SqlAdapter.SelectCommand = $SqlCmd
+
+    $DataSetDB = New-Object System.Data.DataSet
+
+    $Reader = $SqlCmd.ExecuteReader()
     
+    if ($Reader.hasRows) {
+        While ($Reader.Read()) {
+            $SerialNumber = $Reader['serialNum']
+        }
+    } else {
+        $SerialNumber = "0"
+    }
 
-    ###$DataSetDB.Tables[0] | % {
-
-    ###    $test = $_.serialNum
-
-    ###}
-
- 
+    $SqlConnection.Close()
 
     Return $SerialNumber
-
- 
 
 }
 
 function DeleteOldRecords($Table) {
 
-   
-
     $SqlConnection = New-Object System.Data.SqlClient.SqlConnection
-
-    
-
-    $SqlConnection.ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True" 
-
-    
-
+    $SqlConnection.ConnectionString = $ConnectionString
     $SqlConnection.Open() 
 
     $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-
-   
-
+    
     $SqlCmd.CommandText = "DELETE FROM $Table WHERE (TransmitDate < (getdate() - 545))"
-
-   
-
+    
     $SqlCmd.Connection = $SqlConnection
 
     $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
 
     $SqlAdapter.SelectCommand = $SqlCmd
 
-   
-
     $HideCmd = $SqlCmd.executenonquery()
-
-   
 
     $Message = "Deleted " + $HideCmd + " old records from " + $Table
 
-   
-
     $SqlConnection.Close()
-
-   
 
     Return $Message
 
@@ -915,53 +814,35 @@ $FileList | % {
       if ("x" -eq "y") {  
 
         #Get the serial number for the current trunkd ID
-
-        $SerialNumber = GetSerialNumber $_.Radio
-
-       
+        $SerialNumber = GetSerialNumber $_.Radio "assets"
 
         #The trunk ID was not found in the assets table so let's search
-
         #for it in the archive table.
-
         if ($SerialNumber -eq "0") {
 
-            $SerialNumber = GetSerialNumberFromArchive $_.Radio
+            #$SerialNumber = GetSerialNumberFromArchive $_.Radio
+            $SerialNumber = GetSerialNumber $_.Radio "archive-assets"
 
         }
 
-       
-
         #The trunk ID wasn't found in either table so we can assume
-
         #that it is not listed in the db so, let's add it. 
-
         if (($SerialNumber).length -lt 1) {
-
             if (($_.Radio).length -gt 0) {
 
                 #Insert trunk id into db....
-
                 $Range = GetIDRange $_.Radio
 
                 InsertIntoAssetsDB $_.Radio $Range
 
             }
-
         }
 
-       
-
         #This serial number parameter is used for exports only
-
         #it's not required for inserts into the db
-
         $_.SerialNumber = $SerialNumber
 
-       
-
         #this try-catch statement is used to display data to the user while the script is running.
-
         try {
 
             ###$_.Radio + " - " + $SerialNumber

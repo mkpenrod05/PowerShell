@@ -1,10 +1,25 @@
-﻿Clear
+﻿#################################################################################################
+#
+# To Do:
+# - Combine the "Action" & "Status" columns in the database to the "Action" column
+# - Delete the "Status" column
+#
+#
+#
+#################################################################################################
 
+Clear
+
+#PRODUCTION
 #$ConnectionString = "Data Source=dbm2p;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True"
+
+#TESTING
 $ConnectionString = "Data Source=.\SQLEXPRESS;Initial Catalog=PWCS;Persist Security Info=True;Integrated Security=True"
 
 Function GetIndividual($Value) {
 
+    $Individual = "" | Select-Object -Property Radio, RadioUser
+    
     $Value = $Value -replace "Individual = ", ""
 
     $matches = ([regex]::matches($Value, "([0-9]{6})\(.*\](.*)$"))
@@ -12,19 +27,23 @@ Function GetIndividual($Value) {
     $matches | % {
 
         $radio = $_.Groups[1] -replace " ", ""
-
         $radioUser = $_.Groups[2] -replace " ", ""
 
-        $dr["Radio"] = $radio
+        #$dr["Radio"] = $radio
+        $Individual.Radio = $radio
 
-        $dr["RadioUser"] = $radioUser
-
+        #$dr["RadioUser"] = $radioUser
+        $Individual.RadioUser = $radioUser
     }
+
+    Return $Individual
 
 } #end GetIndividual()
 
 Function GetTargetGroup($Value) {
 
+    $TargetGroup = "" | Select-Object -Property TargetGroupID, TargetGroupName
+    
     $Value = $Value -replace "Target Group = ", ""
 
     $matches = ([regex]::matches($Value, "([0-9]{6})\(.*\](.*)$"))
@@ -32,18 +51,22 @@ Function GetTargetGroup($Value) {
     $matches | % {
 
         $TargetGroupID = $_.Groups[1] -replace " ", ""
-
         $TargetGroupName = $_.Groups[2] -replace " ", ""
 
-        $dr["TargetGroupID"] = $TargetGroupID
+        #$dr["TargetGroupID"] = $TargetGroupID
+        $TargetGroup.TargetGroupID = $TargetGroupID
 
-        $dr["TargetGroupName"] = $TargetGroupName
-
+        #$dr["TargetGroupName"] = $TargetGroupName
+        $TargetGroup.TargetGroupName = $TargetGroupName
     }
+
+    Return $TargetGroup
 
 } #end GetTargetGroup()
 
 Function GetOLCallNumber($Value) {
+    
+    $OLCallNumber = "" | Select-Object -Property OLCallNumber
 
     $Value = $Value -replace "OL Call# = ", ""
 
@@ -51,21 +74,15 @@ Function GetOLCallNumber($Value) {
 
     $matches | % {
 
-        $OLCallNumber = $_.Groups[1] -replace " ", ""
+        $Number = $_.Groups[1] -replace " ", ""
 
-        $dr["OLCallNumber"] = $OLCallNumber
-
+        #$dr["OLCallNumber"] = $OLCallNumber
+        $OLCallNumber.OLCallNumber = $Number
     }
 
+    Return $OLCallNumber
+
 } #end GetOLCallNumber()
-
-Function GetReason($Value) {
-
-    $Value = $Value -replace "Reason = ", ""
-
-    $dr["Reason"] = $Value
-
-} #end GetReason()
 
 function GetIDRange($TrunkID) {
     
@@ -377,24 +394,17 @@ function InsertIntoDB($table, $SerialNumber) {
     $SqlConnection.Open() 
 
     $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-    $SqlCmd.CommandText = "INSERT INTO $table (TransmitDate, Action, Status, Radio, RadioUser, SerialNumber, TargetGroupID, TargetGroupName, OLCallNumber, Reason)
-
-        SELECT '" + $_.Date + "', '" + $_.Action + "', '" + $_.Status + "', '" + $_.Radio + "', '" + $_.RadioUser + "', '" + $SerialNumber + "', '" + $_.TargetGroupID + "', '" + $_.TargetGroupName + "', '" + $_.OLCallNumber + "', '" + $_.Reason + "'
-
+    
+    #$SqlCmd.CommandText = "INSERT INTO $table (TransmitDate, Action, Status, Radio, RadioUser, SerialNumber, TargetGroupID, TargetGroupName, OLCallNumber, Reason)
+    $SqlCmd.CommandText = "INSERT INTO $table (TransmitDate, Action, Radio, RadioUser, SerialNumber, TargetGroupID, TargetGroupName, OLCallNumber)
+        SELECT '" + $_.Date + "', '" + $_.Action + "', '" + $_.Radio + "', '" + $_.RadioUser + "', '" + $SerialNumber + "', '" + $_.TargetGroupID + "', '" + $_.TargetGroupName + "', '" + $_.OLCallNumber + "'
         WHERE NOT EXISTS (
-
             SELECT 1 FROM $table WHERE
-
                 TransmitDate = '" + $_.Date + "' AND
-
                 Radio = '" + $_.Radio + "' AND
-
                 RadioUser = '" + $_.RadioUser + "' AND
-
                 TargetGroupID = '" + $_.TargetGroupID + "' AND
-
                 TargetGroupName = '" + $_.TargetGroupName + "'
-
         )"
 
     $SqlCmd.Connection = $SqlConnection
@@ -478,7 +488,7 @@ function DeleteOldRecords($Table) {
     $SqlConnection.Open() 
 
     $SqlCmd = New-Object System.Data.SqlClient.SqlCommand
-    $SqlCmd.CommandText = "DELETE FROM $Table WHERE (TransmitDate < (getdate() - 545))"
+    $SqlCmd.CommandText = "DELETE FROM $Table WHERE (TransmitDate < (getdate() - 730))"
     $SqlCmd.Connection = $SqlConnection
 
     $SqlAdapter = New-Object System.Data.SqlClient.SqlDataAdapter
@@ -500,29 +510,27 @@ $ds.Tables.Add("Items")
 
 [void]$ds.Tables["Items"].Columns.Add("Date",[string])
 [void]$ds.Tables["Items"].Columns.Add("Action",[string])
-[void]$ds.Tables["Items"].Columns.Add("Status",[string])
+#[void]$ds.Tables["Items"].Columns.Add("Status",[string])
 [void]$ds.Tables["Items"].Columns.Add("Radio",[string])
 [void]$ds.Tables["Items"].Columns.Add("RadioUser",[string])
 [void]$ds.Tables["Items"].Columns.Add("SerialNumber",[string])
 [void]$ds.Tables["Items"].Columns.Add("TargetGroupID",[string])
 [void]$ds.Tables["Items"].Columns.Add("TargetGroupName",[string])
 [void]$ds.Tables["Items"].Columns.Add("OLCallNumber",[string])
-[void]$ds.Tables["Items"].Columns.Add("Reason",[string])
+#[void]$ds.Tables["Items"].Columns.Add("Reason",[string])
 
+#PRODUCTION
 #$SetPath = "\\fshill\data\CommInfo\75 CS\Hill CFP\PWCS\Trunking System Log Files"
+
+#TESTING
 $SetPath = "C:\Temp"
 
-#$OriginalFiles = Get-ChildItem "\\fshill\data\CommInfo\75 CS\Hill CFP\PWCS\Trunking System Log Files\Log Files"
 $OriginalFiles = Get-ChildItem "$SetPath\Log Files"
 
 #The following loop will rename all the files in the specified directory with a .txt extension
-
 $OriginalFiles | % {
-
     $new = Join-Path -Path $_.Directory -ChildPath "$($_.basename).txt"
-
     Rename-Item $_.FullName $new -PassThru
-
 }
 
 $CurrentDate = get-date -uformat "%m_%d_%Y"
@@ -532,12 +540,7 @@ md $NewArchiveFolder -ErrorAction SilentlyContinue
 
 $FileList = Get-ChildItem "$SetPath\Log Files"
 
-Get-Date
-
 $FileList | % {   
-
-    #Get-Date -DisplayHint Time
-    #Get-Date -Time
 
     ""
     "Importing contents of file " + $_.Name
@@ -554,9 +557,6 @@ $FileList | % {
     $CZUAOGB = "Controlling Zone Update -  Activation of Global Busy"
     $RSTRA = "Radio Status Traffic -  Radio Affiliation"
 
-    #this regex line produces 13 groups
-    #$words = ([regex]::matches($txt, "([0-9]+/[0-9]+/[0-9]+) [0-9]+:[0-9]+:[0-9]+\] ([$skip]*) -  ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ;"))
-    
     #this regex line produces 12 groups
     $words = ([regex]::matches($txt, "([0-9]+/[0-9]+/[0-9]+) [0-9]+:[0-9]+:[0-9]+\] ($CAUAOGB|$CAUSONC|$CZUAOGB|$RSTRA) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ;"))  
 
@@ -565,22 +565,7 @@ $FileList | % {
     ""
 
     $words | % {
-
-        ##################################
-         $_.Groups[2].Value + " --- " + $_.Groups[3].Value
-        # "Start of New Call" - We know this means somebody actually pushed the talk button on a radio.
-        #
-        #
-        #
-        # We know these following groups are of no value:
-        # "System Activity Request"
-        # "End of Call"
-        ##################################
-
-        #if ($_.Success[100] -eq "False") {"Sorry"} else {"Yeah!"}
-        #"------------------"
-        #sleep 1
-
+        
         $dr = $ds.Tables["Items"].NewRow()
 
         #The SerialNumber column is set at another point in this script because we do not
@@ -591,16 +576,18 @@ $FileList | % {
 
         $dr["Date"] = $_.Groups[1]
         $dr["Action"] = $_.Groups[2]
-        $dr["Status"] = $_.Groups[3]
 
-        #For ($i = 4; $i -lt 14; $i++) {
-        For ($i = 4; $i -lt 13; $i++) {
+        #Uncomment the following lines to see the data while the script runs.
+        #Write-Host "Date ---------------- " $dr["Date"]
+        #Write-Host "Action -------------- " $dr["Action"]
+
+        For ($i = 3; $i -lt 13; $i++) {
 
             if ($_.Groups[$i] -match "Individual =") {
-
-                #The GetIndividual() function assigns a value to the "Radio" and "RadioUser"
-                #columns in the "Items" table.
-                GetIndividual $_.Groups[$i]
+                
+                $Individual = GetIndividual $_.Groups[$i]
+                $dr["Radio"] = $Individual.Radio
+                $dr["RadioUser"] = $Individual.RadioUser
 
                 #Uncomment the following lines to see the data while the script runs.
                 #$_.Groups[$i]
@@ -608,10 +595,10 @@ $FileList | % {
                 #Write-Host "RadioUser ----------- " $dr["RadioUser"]
 
             } elseif ($_.Groups[$i] -match "Target Group =") {
-
-                #The GetTargetGroup() function assigns a value to the "TargetGroupID" and "TargetGroupName"
-                #columns in the "Items" table.
-                GetTargetGroup $_.Groups[$i]
+                
+                $TargetGroup = GetTargetGroup $_.Groups[$i]
+                $dr["TargetGroupID"] = $TargetGroup.TargetGroupID
+                $dr["TargetGroupName"] = $TargetGroup.TargetGroupName
 
                 #Uncomment the following lines to see the data while the script runs.
                 #$_.Groups[$i]
@@ -619,24 +606,13 @@ $FileList | % {
                 #Write-Host "TargetGroupName ----- " $dr["TargetGroupName"]
 
             } elseif ($_.Groups[$i] -match "OL Call# =") {
-
-                #The GetOLCallNumber() function assigns a value to the "OLCallNumber"
-                #column in the "Items" table.
-                GetOLCallNumber $_.Groups[$i]
+                
+                $OLCallNumber = GetOLCallNumber $_.Groups[$i]
+                $dr["OLCallNumber"] = $OLCallNumber.OLCallNumber
 
                 #Uncomment the following lines to see the data while the script runs.
                 #$_.Groups[$i]
                 #Write-Host "OLCallNumber -------- " $dr["OLCallNumber"]
-
-            } elseif ($_.Groups[$i] -match "Reason = ") {
-
-                #The GetReason() function assigns a value to the "Reason"
-                #column in the "Items" table.
-                GetReason $_.Groups[$i]
-
-                #Uncomment the following lines to see the data while the script runs.
-                #$_.Groups[$i]
-                #Write-Host "Reason -------------- " $dr["Reason"]
 
             }
 
@@ -650,7 +626,7 @@ $FileList | % {
     "Updating Database..."
     ""
 
-    sleep 100
+    #sleep 100
 
     $ds.Tables["Items"] | % {
 
@@ -660,19 +636,13 @@ $FileList | % {
             $Range = "UNKNOWN"
         }
 
-        #This section is just for testing.  Uncomment to see the 
-        #the trunk ID range for each trunk ID.
-        #try {
-        #    "TRUNK ID: " + $_.Radio + " --- ID RANGE: " + $Range
-        #} catch [Exception] {
-        #    "TRUNK ID: UNDEFINED --- ID RANGE: " + $Range
-        #}
-
-      ##############Temp if statement
-      ##############if ("x" -eq "y") {  
-
         #Get the serial number for the current trunkd ID
-        $SerialNumber = GetSerialNumber $_.Radio "assets"
+        
+        #PRODUCTION
+        ###$SerialNumber = GetSerialNumber $_.Radio "assets"
+        
+        #TESTING
+        $SerialNumber = "111MMM2222"
 
         #The trunk ID was not found in the assets table so let's search
         #for it in the archive table.
@@ -686,6 +656,7 @@ $FileList | % {
         #The trunk ID wasn't found in either table so we can assume
         #that it is not listed in the db so, let's add it. 
         if (($SerialNumber).length -lt 1) {
+            
             if (($_.Radio).length -gt 0) {
 
                 #Insert trunk id into db....
@@ -694,50 +665,25 @@ $FileList | % {
                 InsertIntoAssetsDB $_.Radio $Range
 
             }
+
         }
 
-        #This serial number parameter is used for exports only
-        #it's not required for inserts into the db
         $_.SerialNumber = $SerialNumber
 
         #this try-catch statement is used to display data to the user while the script is running.
         try {
-
             $_.Radio + " - " + $SerialNumber
-
         } catch [Exception] {
-
             #this exception will catch if the $SerialNumber variable or $_.Radio value comes back null
-
             "-----Undefined-----"
-
         }
 
-        if ($_.Action -notmatch "Radio Status Traffic") {   
-
-            if ($_.Status -match "Start of New Call") {
-
-                InsertIntoDB "TrunkingSystemLog" "$SerialNumber"
-
-            } elseif ($_.Status -notmatch "Call") {
-
-                InsertIntoDB "TrunkingSystemLog_OTHER" "$SerialNumber"
-
-            }
-
-        } else {
-
-            InsertIntoDB "TrunkingSystemLog_RST" "$SerialNumber"
-
-        }
-
-      #####################}
-      ####################temp if statement 
+        InsertIntoDB "TrunkingSystemLog" "$SerialNumber"
 
     }   
 
     #Uncomment the following line to spit out a csv file of the current data table.
-    #$ds.Tables["Items"] | Export-Csv -Path "$SetPath\$FileName" -Force -NoTypeInformation
+    #$ds.Tables["Items"] | Export-Csv -Path "$SetPath\$FileName.csv" -Force -NoTypeInformation
 
     $ds.Tables["Items"].Clear()
 
@@ -752,14 +698,12 @@ $FileList | % {
 ""
 "All Files Imported..."
 ""
+
+#TESTING
+Sleep 100
+
 "Deleting Old Records..."
 ""
 DeleteOldRecords "TrunkingSystemLog"
-""
-DeleteOldRecords "TrunkingSystemLog_OTHER"
-""
-DeleteOldRecords "TrunkingSystemLog_RST"
-""
-Get-Date
 ""
 "Complete!"

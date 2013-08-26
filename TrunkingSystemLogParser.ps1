@@ -549,7 +549,16 @@ $FileList | % {
 
     $skip = "a-z A-Z 0-9 \s \- \( \) \[ \] \{ \} _ . : = # , / $"
 
-    $words = ([regex]::matches($txt, "([0-9]+/[0-9]+/[0-9]+) [0-9]+:[0-9]+:[0-9]+\] ([$skip]*) -  ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ;")) 
+    $CAUAOGB = "Call Activity Update -  Activation of Global Busy"
+    $CAUSONC = "Call Activity Update -  Start of New Call"
+    $CZUAOGB = "Controlling Zone Update -  Activation of Global Busy"
+    $RSTRA = "Radio Status Traffic -  Radio Affiliation"
+
+    #this regex line produces 13 groups
+    #$words = ([regex]::matches($txt, "([0-9]+/[0-9]+/[0-9]+) [0-9]+:[0-9]+:[0-9]+\] ([$skip]*) -  ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ;"))
+    
+    #this regex line produces 12 groups
+    $words = ([regex]::matches($txt, "([0-9]+/[0-9]+/[0-9]+) [0-9]+:[0-9]+:[0-9]+\] ($CAUAOGB|$CAUSONC|$CZUAOGB|$RSTRA) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ; ([$skip]*) ;"))  
 
     ""
     "Matching data..."
@@ -558,7 +567,7 @@ $FileList | % {
     $words | % {
 
         ##################################
-         $_.Groups[2].Value + " - " + $_.Groups[3].Value
+         $_.Groups[2].Value + " --- " + $_.Groups[3].Value
         # "Start of New Call" - We know this means somebody actually pushed the talk button on a radio.
         #
         #
@@ -574,17 +583,18 @@ $FileList | % {
 
         $dr = $ds.Tables["Items"].NewRow()
 
-        $dr["Date"] = $_.Groups[1]
-        $dr["Action"] = $_.Groups[2]
-        $dr["Status"] = $_.Groups[3]
-
         #The SerialNumber column is set at another point in this script because we do not
         #know it at this point.  The Trunking system log files do not track radio transmits by 
         #serial number.  We will have to use a function to look up this value in the database.
         #For the time being, we'll set this to a default value.
         $dr["SerialNumber"] = ""
 
-        For ($i = 4; $i -lt 14; $i++) {
+        $dr["Date"] = $_.Groups[1]
+        $dr["Action"] = $_.Groups[2]
+        $dr["Status"] = $_.Groups[3]
+
+        #For ($i = 4; $i -lt 14; $i++) {
+        For ($i = 4; $i -lt 13; $i++) {
 
             if ($_.Groups[$i] -match "Individual =") {
 
@@ -599,7 +609,7 @@ $FileList | % {
 
             } elseif ($_.Groups[$i] -match "Target Group =") {
 
-                #The GetIndividual() function assigns a value to the "TargetGroupID" and "TargetGroupName"
+                #The GetTargetGroup() function assigns a value to the "TargetGroupID" and "TargetGroupName"
                 #columns in the "Items" table.
                 GetTargetGroup $_.Groups[$i]
 
@@ -610,7 +620,7 @@ $FileList | % {
 
             } elseif ($_.Groups[$i] -match "OL Call# =") {
 
-                #The GetIndividual() function assigns a value to the "OLCallNumber"
+                #The GetOLCallNumber() function assigns a value to the "OLCallNumber"
                 #column in the "Items" table.
                 GetOLCallNumber $_.Groups[$i]
 
@@ -620,7 +630,7 @@ $FileList | % {
 
             } elseif ($_.Groups[$i] -match "Reason = ") {
 
-                #The GetIndividual() function assigns a value to the "Reason"
+                #The GetReason() function assigns a value to the "Reason"
                 #column in the "Items" table.
                 GetReason $_.Groups[$i]
 
@@ -639,6 +649,8 @@ $FileList | % {
     ""
     "Updating Database..."
     ""
+
+    sleep 100
 
     $ds.Tables["Items"] | % {
 

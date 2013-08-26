@@ -700,7 +700,7 @@ $FileList | % {
 ""
 
 #TESTING
-Sleep 100
+#Sleep 100
 
 "Deleting Old Records..."
 ""

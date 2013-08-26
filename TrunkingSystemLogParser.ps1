@@ -3,8 +3,8 @@
 # To Do:
 # - Combine the "Action" & "Status" columns in the database to the "Action" column
 # - Delete the "Status" column
-#
-#
+# - Add the appriate data from the _OTHER and _RST tables to the main log table
+# - Delete those tables once done
 #
 #################################################################################################
 
@@ -91,9 +91,11 @@ function GetIDRange($TrunkID) {
 
     if (($TrunkID -ne "") -and ($TrunkID -ne $null)) {
         if (($TrunkID -ge "700001") -and ($TrunkID -le "700499")) {$Result = "LAO"}
+
         elseif (($TrunkID -ge "701000") -and ($TrunkID -le "701499")) {$Result = "388 FW"}
         elseif (($TrunkID -ge "701500") -and ($TrunkID -le "701540")) {$Result = "IG"}
         elseif (($TrunkID -ge "701541") -and ($TrunkID -le "701589")) {$Result = "START"}
+        
         elseif (($TrunkID -ge "702000") -and ($TrunkID -le "702099")) {$Result = "DP-READINESS"}
         elseif (($TrunkID -ge "702100") -and ($TrunkID -le "702249")) {$Result = "388 FW"}
         elseif (($TrunkID -ge "702250") -and ($TrunkID -le "702499")) {$Result = "DP-READINESS"}
@@ -104,20 +106,31 @@ function GetIDRange($TrunkID) {
         elseif (($TrunkID -ge "705000") -and ($TrunkID -le "705799")) {$Result = "388 RANS"}
         elseif (($TrunkID -ge "705800") -and ($TrunkID -le "705999")) {$Result = "388 FW"}
         elseif (($TrunkID -ge "706000") -and ($TrunkID -le "706299")) {$Result = "75 LRS"}
+        
         elseif (($TrunkID -ge "706500") -and ($TrunkID -le "706999")) {$Result = "419TH"}
         elseif (($TrunkID -ge "707000") -and ($TrunkID -le "707499")) {$Result = "MISSILE"}
         elseif (($TrunkID -ge "707500") -and ($TrunkID -le "707799")) {$Result = "HOSPITAL"}
+        
         elseif (($TrunkID -ge "708500") -and ($TrunkID -le "708549")) {$Result = "ENVIRONMENTAL"}
+        
         elseif (($TrunkID -ge "709000") -and ($TrunkID -le "709360")) {$Result = "FIRE"}
+        
         elseif (($TrunkID -ge "709500") -and ($TrunkID -le "709799")) {$Result = "OSI"}
+        
         elseif (($TrunkID -ge "710500") -and ($TrunkID -le "710999")) {$Result = "BASE TAXI"}
         elseif (($TrunkID -ge "711000") -and ($TrunkID -le "711499")) {$Result = "75 COMM"}
         elseif (($TrunkID -ge "711500") -and ($TrunkID -le "711999")) {$Result = "649 MUNS"}
+        
         elseif (($TrunkID -ge "712100") -and ($TrunkID -le "712149")) {$Result = "649 CLSS"}
+        
         elseif (($TrunkID -ge "713000") -and ($TrunkID -le "713499")) {$Result = "75 RANS"}
+        
         elseif (($TrunkID -ge "714000") -and ($TrunkID -le "714049")) {$Result = "299TH"}
+        
         elseif (($TrunkID -ge "715000") -and ($TrunkID -le "715099")) {$Result = "86 FWS DET 1"}
+        
         elseif (($TrunkID -ge "718888") -and ($TrunkID -le "719562")) {$Result = "SLC GUARD DIGITAL"}
+        
         elseif (($TrunkID -ge "720200") -and ($TrunkID -le "720599")) {$Result = "BASE OPS CONSOLE ID"}
         elseif (($TrunkID -ge "720600") -and ($TrunkID -le "720799")) {$Result = "COMMAND POST CONSOLE ID"}
         elseif (($TrunkID -ge "721000") -and ($TrunkID -le "721199")) {$Result = "DP-READINESS CONSOLE ID"}
@@ -637,7 +650,6 @@ $FileList | % {
         }
 
         #Get the serial number for the current trunkd ID
-        
         #PRODUCTION
         ###$SerialNumber = GetSerialNumber $_.Radio "assets"
         
@@ -659,7 +671,8 @@ $FileList | % {
             
             if (($_.Radio).length -gt 0) {
 
-                #Insert trunk id into db....
+                #Insert trunk id into db.
+                #$Range is defined above, calling this function again may be redundant...
                 $Range = GetIDRange $_.Radio
 
                 InsertIntoAssetsDB $_.Radio $Range
